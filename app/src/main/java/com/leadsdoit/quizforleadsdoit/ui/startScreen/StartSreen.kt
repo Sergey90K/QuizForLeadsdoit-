@@ -29,6 +29,10 @@ import com.leadsdoit.quizforleadsdoit.R
 import com.leadsdoit.quizforleadsdoit.ui.theme.QuizForLeadsdoitTheme
 
 @Composable
+fun Test(){
+
+}
+@Composable
 fun SuccessfulScreen(startAction: () -> Unit, modifier: Modifier) {
     val imageModifier = Modifier
         .size(dimensionResource(R.dimen.image_size))
