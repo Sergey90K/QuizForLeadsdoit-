@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">QuizForLeadsdoit</string>
+    <string name="connection_error">connection error icon</string>
+    <string name="retry">retry</string>
+    <string name="failed_to_load_data_from_server">Failed to load data from server</string>
+    <string name="computer_icon">Computer icon</string>
+    <string name="quiz_on_knowledge_of_computer_components">Quiz on knowledge of computer components</string>
+    <string name="to_begin">To begin</string>
+    <string name="cancel">Cancel</string>
+    <string name="next">Next</string>
+    <string name="congratulations_you_passed_the_quiz">Congratulations, you passed the quiz</string>
+    <string name="your_result">Your result - %d percent </string>
+    <string name="exit_the_program">Exit the program</string>
+    <string name="repeat_game">Repeat Game</string>
 </resources>
