@@ -3,8 +3,10 @@ package com.leadsdoit.quizforleadsdoit.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.leadsdoit.quizforleadsdoit.ui.questionScreen.QuestionDestination
 import com.leadsdoit.quizforleadsdoit.ui.questionScreen.QuestionScreen
 import com.leadsdoit.quizforleadsdoit.ui.resultsScreen.ResultDestination
@@ -20,12 +22,14 @@ fun QuizNavHost(navController: NavHostController, modifier: Modifier = Modifier)
         modifier = modifier
     ) {
         composable(route = StartDestination.route) {
-            StartScreen()
+            StartScreen(navigateToQuestionPage = { navController.navigate(QuestionDestination.route) })
         }
         composable(route = QuestionDestination.route) {
-            QuestionScreen()
+            QuestionScreen(navigateToResultPage = { navController.navigate("${ResultDestination.route}/$it") })
         }
-        composable(route = ResultDestination.route) {
+        composable(route = ResultDestination.routeWithArgs, arguments = listOf(navArgument(ResultDestination.sourceArgs){
+            type = NavType.IntType
+        }) ) {
             ResultScreen()
         }
     }

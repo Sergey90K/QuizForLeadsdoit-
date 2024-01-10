@@ -1,5 +1,6 @@
 package com.leadsdoit.quizforleadsdoit.ui.resultsScreen
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,25 +16,40 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.leadsdoit.quizforleadsdoit.R
 import com.leadsdoit.quizforleadsdoit.network.Answer
+import com.leadsdoit.quizforleadsdoit.ui.AppViewModelProvider
 import com.leadsdoit.quizforleadsdoit.ui.navigation.NavigationDestination
 
 object ResultDestination : NavigationDestination {
     override val route = "result"
     override val titleRes = R.string.results_page
+    const val sourceArgs = "sourceArgs"
+    val routeWithArgs = "$route/{$sourceArgs}"
 }
 
 @Composable
-fun ResultScreen(){}
+fun ResultScreen(viewModel: ResultViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = AppViewModelProvider.Factory)) {
+    val resultUiState by viewModel.questionUiState.collectAsStateWithLifecycle()
+    val sourceUiState by viewModel.sourceUiState.collectAsStateWithLifecycle()
+    val activity = (LocalContext.current as? Activity)
+    ShowResultScreen(onExitButtonClicked = {activity?.finish()},answer = resultUiState.answer, result = sourceUiState, modifier = Modifier)
+}
 
 @Composable
-fun ShowResultScreen(answer: List<Answer>, result: Int, modifier: Modifier) {
+fun ShowResultScreen(
+    onExitButtonClicked: () -> Unit,
+    answer: List<Answer>,
+    result: Int,
+    modifier: Modifier
+) {
     Box(contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -42,7 +58,11 @@ fun ShowResultScreen(answer: List<Answer>, result: Int, modifier: Modifier) {
         ) {
             ShowCongratulation(result = result, modifier = modifier)
             ShowTrueAnswer(answer = answer, modifier = modifier)
-            ShowButton(onExitButtonClicked = {}, onRepeatButtonClicked = {}, modifier)
+            ShowButton(
+                onExitButtonClicked = onExitButtonClicked,
+                onRepeatButtonClicked = {},
+                modifier
+            )
         }
     }
 }
@@ -133,15 +153,15 @@ fun ShowCongratulation(result: Int, modifier: Modifier) {
 //    )
 //}
 
-@Preview
-@Composable
-fun ShowRez2() {
-    ShowResultScreen(
-        answer = listOf(
-            Answer("Question one", "Answer one"),
-            Answer("Question two", "Answer two"),
-            Answer("Question tre", "Answer tre"),
-            Answer("Question for", "Answer for")
-        ), result = 50, modifier = Modifier
-    )
-}
+//@Preview
+//@Composable
+//fun ShowRez2() {
+//    ShowResultScreen(
+//        answer = listOf(
+//            Answer("Question one", "Answer one"),
+//            Answer("Question two", "Answer two"),
+//            Answer("Question tre", "Answer tre"),
+//            Answer("Question for", "Answer for")
+//        ), result = 50, modifier = Modifier
+//    )
+//}

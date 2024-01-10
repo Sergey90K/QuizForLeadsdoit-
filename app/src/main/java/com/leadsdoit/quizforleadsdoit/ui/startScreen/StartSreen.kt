@@ -16,6 +16,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -24,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.leadsdoit.quizforleadsdoit.R
 import com.leadsdoit.quizforleadsdoit.ui.AppViewModelProvider
 import com.leadsdoit.quizforleadsdoit.ui.navigation.NavigationDestination
@@ -35,8 +37,24 @@ object StartDestination : NavigationDestination {
 }
 
 @Composable
-fun StartScreen(viewModel: StartViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = AppViewModelProvider.Factory)) {
+fun StartScreen(
+    navigateToQuestionPage: () -> Unit,
+    viewModel: StartViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val uiState by viewModel.quizUiState.collectAsStateWithLifecycle()
+    when (uiState) {
+        is QuizUiState.Success -> {
+            SuccessfulScreen(startAction =  navigateToQuestionPage , modifier = Modifier)
+        }
 
+        is QuizUiState.Loading -> {
+            LoadingScreen()
+        }
+
+        is QuizUiState.Error -> {
+            ErrorScreen(retryAction = { /*TODO*/ })
+        }
+    }
 }
 
 @Composable

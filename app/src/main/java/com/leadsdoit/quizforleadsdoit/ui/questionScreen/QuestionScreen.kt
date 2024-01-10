@@ -20,16 +20,13 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.leadsdoit.quizforleadsdoit.R
-import com.leadsdoit.quizforleadsdoit.network.Question
+import com.leadsdoit.quizforleadsdoit.ui.AppViewModelProvider
 import com.leadsdoit.quizforleadsdoit.ui.navigation.NavigationDestination
 
 object QuestionDestination : NavigationDestination {
@@ -38,27 +35,153 @@ object QuestionDestination : NavigationDestination {
 }
 
 @Composable
-fun QuestionScreen(){}
+fun QuestionScreen(
+    navigateToResultPage: (Int) -> Unit,
+    viewModel: QuestionViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = AppViewModelProvider.Factory
+    )
+) {
+    val questionUiState by viewModel.questionUiState.collectAsStateWithLifecycle()
+    val selectedValueUiState by viewModel.selectedValueUiState.collectAsStateWithLifecycle()
+    val allowShowQuestionUiState by viewModel.allowShowQuestionUiState.collectAsStateWithLifecycle()
+    val showCheckButtonUiState by viewModel.showCheckButtonUiState.collectAsStateWithLifecycle()
+    val scoreUiState by viewModel.scoreUiState.collectAsStateWithLifecycle()
+
+    ShowQuestionScreen(
+        scoreUiState = scoreUiState,
+        navigateToResultPage = navigateToResultPage,
+        showCheckButton = showCheckButtonUiState,
+        allowShowQuestion = allowShowQuestionUiState,
+        selectValue = viewModel::selectValue,
+        selectedValue = selectedValueUiState,
+        allQuestion = questionUiState.question,
+        onNextButtonClicked = viewModel::checkTheAnswer,
+        modifier = Modifier
+    )
+}
+
 @Composable
-fun ShowQuestionScreen(allQuestion: List<Question>, modifier: Modifier) {
+fun ShowQuestionScreen(
+    scoreUiState: Int,
+    navigateToResultPage: (Int) -> Unit,
+    showCheckButton: Boolean,
+    allowShowQuestion: Array<Boolean>,
+    selectValue: (String) -> Unit,
+    selectedValue: String,
+    allQuestion: List<com.leadsdoit.quizforleadsdoit.data.Question>,
+    onNextButtonClicked: () -> Unit,
+    modifier: Modifier
+) {
     Box(contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier.fillMaxSize(),
-             verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Center,
             // verticalArrangement = Arrangement.SpaceBetween,
-              horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ShowListOfQuestion(
+                scoreUiState =scoreUiState,
+                navigateToResultPage = navigateToResultPage,
+                showCheckButton = showCheckButton,
+                allowShowQuestion = allowShowQuestion,
+                selectValue = selectValue,
+                selectedValue = selectedValue,
                 allQuestion = allQuestion,
                 onCancelButtonClicked = {},
-                onNextButtonClicked = {},
-                modifier)
+                onNextButtonClicked = onNextButtonClicked,
+                modifier
+            )
+        }
+    }
+}
+
+@Composable
+fun ShowListOfQuestion(
+    scoreUiState : Int,
+    navigateToResultPage: (Int) -> Unit,
+    showCheckButton: Boolean,
+    allowShowQuestion: Array<Boolean>,
+    selectValue: (String) -> Unit,
+    selectedValue: String,
+    allQuestion: List<com.leadsdoit.quizforleadsdoit.data.Question>,
+    onCancelButtonClicked: () -> Unit,
+    onNextButtonClicked: () -> Unit,
+    modifier: Modifier
+) {
+    LazyColumn() {
+        itemsIndexed(allQuestion) { index, item ->
+            ShowListOfAnswer(
+                allowShowQuestion = allowShowQuestion[index],
+                selectValue = selectValue,
+                selectedValue = selectedValue,
+                question = item.question,
+                options = item.answer
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
+        }
+        item {
+            ShowButton(
+                scoreUiState = scoreUiState,
+                navigateToResultPage = navigateToResultPage,
+                showCheckButton = showCheckButton,
+                selectedValue = selectedValue,
+                onCancelButtonClicked = onCancelButtonClicked,
+                onNextButtonClicked = onNextButtonClicked,
+                modifier = modifier
+            )
+        }
+    }
+}
+
+@Composable
+fun ShowListOfAnswer(
+    allowShowQuestion: Boolean,
+    selectValue: (String) -> Unit,
+    selectedValue: String,
+    question: String,
+    options: List<String>,
+    modifier: Modifier = Modifier
+) {
+    if (allowShowQuestion) {
+        Card(modifier = modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))) {
+                Text(
+                    text = question,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
+                options.forEach { item ->
+                    Row(
+                        modifier = Modifier.selectable(
+                            selected = selectedValue == item,
+                            onClick = {
+                                selectValue(item)
+                                //  onSelectionChanged(item)
+                            }
+                        ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = selectedValue == item,
+                            onClick = {
+                                selectValue(item)
+                                // onSelectionChanged(item)
+                            }
+                        )
+                        Text(item)
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
 fun ShowButton(
+    scoreUiState : Int,
+    navigateToResultPage: (Int) -> Unit,
+    showCheckButton: Boolean,
+    selectedValue: String,
     onCancelButtonClicked: () -> Unit,
     onNextButtonClicked: () -> Unit,
     modifier: Modifier
@@ -76,100 +199,53 @@ fun ShowButton(
         }
         Button(
             modifier = Modifier.weight(1f),
-            // the button is enabled when the user makes a selection
-            //enabled = selectedValue.isNotEmpty(),
-            onClick = onNextButtonClicked
-        ) {
-            Text(stringResource(R.string.next))
-        }
-    }
-}
-
-@Composable
-fun ShowListOfAnswer(question: String, options: List<String>, modifier: Modifier = Modifier) {
-    var selectedValue by rememberSaveable { mutableStateOf("") }
-    Card(modifier = modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))) {
-            Text(
-                text = question,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
-            options.forEach { item ->
-                Row(
-                    modifier = Modifier.selectable(
-                        selected = selectedValue == item,
-                        onClick = {
-                            selectedValue = item
-                            //  onSelectionChanged(item)
-                        }
-                    ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = selectedValue == item,
-                        onClick = {
-                            selectedValue = item
-                            // onSelectionChanged(item)
-                        }
-                    )
-                    Text(item)
+            enabled = selectedValue.isNotEmpty(),
+            onClick = {
+                if (showCheckButton) {
+                    onNextButtonClicked()
+                } else {
+                    navigateToResultPage(scoreUiState)
                 }
             }
+        ) {
+            if (showCheckButton) {
+                Text(stringResource(R.string.next))
+            } else {
+                Text(stringResource(R.string.check))
+            }
+
         }
     }
 }
 
-@Composable
-fun ShowListOfQuestion(
-    allQuestion: List<Question>,
-    onCancelButtonClicked: () -> Unit,
-    onNextButtonClicked: () -> Unit,
-    modifier: Modifier
-) {
-    LazyColumn() {
-        itemsIndexed(allQuestion) { index, item ->
-            ShowListOfAnswer(question = item.questionText, options = item.choiceOfAnswer)
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
-        }
-        item {
-            ShowButton(
-                onCancelButtonClicked = { onCancelButtonClicked },
-                onNextButtonClicked = { onNextButtonClicked },
-                modifier = modifier
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-fun SelectOptionPreview() {
-    ShowQuestionScreen(
-        listOf<Question>(
-            Question(
-                "First question",
-                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
-                0
-            ),
-            Question(
-                "Second question",
-                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
-                4
-            ),
-            Question(
-                "Third question",
-                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
-                4
-            ),
-            Question(
-                "Forth question",
-                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
-                1
-            )
-        ), Modifier
-    )
-}
+//@Preview
+//@Composable
+//fun SelectOptionPreview() {
+//    ShowQuestionScreen(
+//        listOf<Question>(
+//            Question(
+//                "First question",
+//                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
+//                0
+//            ),
+//            Question(
+//                "Second question",
+//                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
+//                4
+//            ),
+//            Question(
+//                "Third question",
+//                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
+//                4
+//            ),
+//            Question(
+//                "Forth question",
+//                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
+//                1
+//            )
+//        ), Modifier
+//    )
+//}
 
 //@Preview
 //@Composable

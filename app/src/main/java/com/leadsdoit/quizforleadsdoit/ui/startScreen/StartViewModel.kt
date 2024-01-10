@@ -57,7 +57,6 @@ class StartViewModel(
                     )
                 }
             }
-
             is QuizUiState.Error -> {}
             is QuizUiState.Loading -> {}
         }
