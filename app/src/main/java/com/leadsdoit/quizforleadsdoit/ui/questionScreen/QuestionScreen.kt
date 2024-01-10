@@ -141,19 +141,23 @@ fun SelectOptionPreview() {
         listOf<Question>(
             Question(
                 "First question",
-                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4")
+                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
+                0
             ),
             Question(
                 "Second question",
-                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4")
+                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
+                4
             ),
             Question(
                 "Third question",
-                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4")
+                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
+                4
             ),
             Question(
                 "Forth question",
-                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4")
+                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
+                1
             )
         ), Modifier
     )

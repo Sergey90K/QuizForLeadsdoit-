@@ -10,8 +10,9 @@ import com.leadsdoit.quizforleadsdoit.ui.startScreen.Test
 
 
 @Composable
-fun QuizApp(startViewModel : StartViewModel = viewModel(factory = StartViewModel.Factory)){
+fun QuizApp(startViewModel : StartViewModel = viewModel(factory = AppViewModelProvider.Factory)){
     val uiState by startViewModel.quizUiState.collectAsStateWithLifecycle()
+
     Test()
     Log.d("Test", uiState.toString())
 }

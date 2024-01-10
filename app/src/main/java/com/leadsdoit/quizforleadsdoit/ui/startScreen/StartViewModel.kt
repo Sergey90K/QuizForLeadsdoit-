@@ -1,14 +1,8 @@
 package com.leadsdoit.quizforleadsdoit.ui.startScreen
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.leadsdoit.quizforleadsdoit.QuizApplication
+import com.leadsdoit.quizforleadsdoit.data.QuestionRepository
 import com.leadsdoit.quizforleadsdoit.data.QuizRepository
 import com.leadsdoit.quizforleadsdoit.network.Question
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,10 +18,13 @@ sealed interface QuizUiState {
     object Loading : QuizUiState
 }
 
-class StartViewModel(private val quizRepository: QuizRepository) : ViewModel() {
+class StartViewModel(
+    private val quizRepository: QuizRepository,
+    private val questionRepository: QuestionRepository
+) : ViewModel() {
 
     private val _quizUiState = MutableStateFlow<QuizUiState>(QuizUiState.Loading)
-    var quizUiState:StateFlow<QuizUiState> = _quizUiState.asStateFlow()
+    var quizUiState: StateFlow<QuizUiState> = _quizUiState.asStateFlow()
 
     init {
         getQuizNetwork()
@@ -37,21 +34,45 @@ class StartViewModel(private val quizRepository: QuizRepository) : ViewModel() {
         viewModelScope.launch {
             _quizUiState.value = try {
                 QuizUiState.Success(quizRepository.getQuestion())
-            }catch (e: IOException){
+            } catch (e: IOException) {
                 QuizUiState.Error
             }
+            writeToDatabase()
         }
     }
 
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application =
-                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as QuizApplication)
-                val quizRepository= application.container.quizRepository
-                StartViewModel(quizRepository = quizRepository)
-
+    private suspend fun writeToDatabase() {
+        when (_quizUiState.value) {
+            is QuizUiState.Success -> {
+                val data =
+                    (_quizUiState.value as QuizUiState.Success).quizQuestion as List<Question>
+                for (item in data) {
+                    questionRepository.insert(
+                        com.leadsdoit.quizforleadsdoit.data.Question(
+                            0,
+                            item.questionText,
+                            item.choiceOfAnswer,
+                            item.rightAnswer
+                        )
+                    )
+                }
             }
+
+            is QuizUiState.Error -> {}
+            is QuizUiState.Loading -> {}
         }
     }
+
+
+//    companion object {
+//        val Factory: ViewModelProvider.Factory = viewModelFactory {
+//            initializer {
+//                val application =
+//                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as QuizApplication)
+//                val quizRepository= application.container.quizRepository
+//                StartViewModel(quizRepository = quizRepository)
+//
+//            }
+//        }
+//    }
 }
