@@ -22,6 +22,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.leadsdoit.quizforleadsdoit.R
 import com.leadsdoit.quizforleadsdoit.network.Answer
+import com.leadsdoit.quizforleadsdoit.ui.navigation.NavigationDestination
+
+object ResultDestination : NavigationDestination {
+    override val route = "result"
+    override val titleRes = R.string.results_page
+}
+
+@Composable
+fun ResultScreen(){}
 
 @Composable
 fun ShowResultScreen(answer: List<Answer>, result: Int, modifier: Modifier) {

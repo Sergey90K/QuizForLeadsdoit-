@@ -44,8 +44,8 @@ class StartViewModel(
     private suspend fun writeToDatabase() {
         when (_quizUiState.value) {
             is QuizUiState.Success -> {
-                val data =
-                    (_quizUiState.value as QuizUiState.Success).quizQuestion as List<Question>
+                val data = (_quizUiState.value as QuizUiState.Success).quizQuestion
+                questionRepository.deleteAll()
                 for (item in data) {
                     questionRepository.insert(
                         com.leadsdoit.quizforleadsdoit.data.Question(
@@ -62,7 +62,6 @@ class StartViewModel(
             is QuizUiState.Loading -> {}
         }
     }
-
 
 //    companion object {
 //        val Factory: ViewModelProvider.Factory = viewModelFactory {

@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,12 +25,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leadsdoit.quizforleadsdoit.R
+import com.leadsdoit.quizforleadsdoit.ui.AppViewModelProvider
+import com.leadsdoit.quizforleadsdoit.ui.navigation.NavigationDestination
 import com.leadsdoit.quizforleadsdoit.ui.theme.QuizForLeadsdoitTheme
 
+object StartDestination : NavigationDestination {
+    override val route = "start"
+    override val titleRes = R.string.app_name
+}
+
 @Composable
-fun Test(){
+fun StartScreen(viewModel: StartViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = AppViewModelProvider.Factory)) {
 
 }
+
+@Composable
+fun Test() {
+
+}
+
 @Composable
 fun SuccessfulScreen(startAction: () -> Unit, modifier: Modifier) {
     val imageModifier = Modifier
@@ -83,31 +95,31 @@ fun SuccessfulScreen(startAction: () -> Unit, modifier: Modifier) {
     Box(contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier.fillMaxSize(),
-           // verticalArrangement = Arrangement.Center,
+            // verticalArrangement = Arrangement.Center,
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
-        ) {
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+            ) {
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
-            Image(
-                painter = painterResource(id = R.drawable.media_design_hydropro_v2_tower_128),
-                contentDescription = stringResource(R.string.computer_icon),
-                contentScale = ContentScale.Fit,
-                modifier = imageModifier
-                //     .clickable {  }
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
-            Text(
-                text = stringResource(R.string.quiz_on_knowledge_of_computer_components),
-                style = MaterialTheme.typography.displayLarge,
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
+                Image(
+                    painter = painterResource(id = R.drawable.media_design_hydropro_v2_tower_128),
+                    contentDescription = stringResource(R.string.computer_icon),
+                    contentScale = ContentScale.Fit,
+                    modifier = imageModifier
+                    //     .clickable {  }
+                )
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
+                Text(
+                    text = stringResource(R.string.quiz_on_knowledge_of_computer_components),
+                    style = MaterialTheme.typography.displayLarge,
+                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
 
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_small)))
+                    )
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_small)))
 
             }
 //            Image(
@@ -210,6 +222,6 @@ fun GreetingPrevies2() {
 @Composable
 fun GreetingPrevies3() {
     QuizForLeadsdoitTheme(darkTheme = false) {
-        SuccessfulScreen(startAction = {/*TODO*/}, modifier = Modifier)
+        SuccessfulScreen(startAction = {/*TODO*/ }, modifier = Modifier)
     }
 }

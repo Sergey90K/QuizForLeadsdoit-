@@ -12,4 +12,6 @@
     <string name="your_result">Your result - %d percent </string>
     <string name="exit_the_program">Exit the program</string>
     <string name="repeat_game">Repeat Game</string>
+    <string name="questions_page">Questions page</string>
+    <string name="results_page">Results page</string>
 </resources>

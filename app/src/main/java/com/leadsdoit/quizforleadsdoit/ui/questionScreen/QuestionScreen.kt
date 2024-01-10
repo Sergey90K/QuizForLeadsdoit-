@@ -30,7 +30,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.leadsdoit.quizforleadsdoit.R
 import com.leadsdoit.quizforleadsdoit.network.Question
+import com.leadsdoit.quizforleadsdoit.ui.navigation.NavigationDestination
 
+object QuestionDestination : NavigationDestination {
+    override val route = "question"
+    override val titleRes = R.string.questions_page
+}
+
+@Composable
+fun QuestionScreen(){}
 @Composable
 fun ShowQuestionScreen(allQuestion: List<Question>, modifier: Modifier) {
     Box(contentAlignment = Alignment.Center) {
