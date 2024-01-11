@@ -1,5 +1,11 @@
 package com.leadsdoit.quizforleadsdoit.ui.questionScreen
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -82,7 +88,10 @@ fun ShowQuestionScreen(
     onNextButtonClicked: () -> Unit,
     modifier: Modifier
 ) {
-    Box(contentAlignment = Alignment.Center) {
+
+    Box(
+        contentAlignment = Alignment.Center
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -97,9 +106,21 @@ fun ShowQuestionScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                if (!showCheckButton) {
+                AnimatedVisibility(
+                    !showCheckButton,
+                    enter = expandVertically(expandFrom = Alignment.Top) { 20 },
+                    exit = shrinkVertically(animationSpec = tween()) { fullHeight ->
+                        fullHeight / 2
+                    },
+                ) {
                     ShowCongratulation()
-                }else{
+                }
+                AnimatedVisibility(
+                    showCheckButton, enter = expandVertically(expandFrom = Alignment.Top) { 20 },
+                    exit = shrinkVertically(animationSpec = tween()) { fullHeight ->
+                        fullHeight / 2
+                    },
+                ) {
                     ShowListOfQuestion(
                         allowShowQuestion = allowShowQuestion,
                         selectValue = selectValue,
@@ -126,6 +147,8 @@ fun ShowQuestionScreen(
             }
         }
     }
+
+
 }
 
 @Composable
@@ -167,7 +190,7 @@ fun ShowListOfQuestion(
                 selectValue = selectValue,
                 selectedValue = selectedValue,
                 question = item.question,
-                options = item.answer
+                options = item.answer,
             )
         }
     }
@@ -182,7 +205,11 @@ fun ShowListOfAnswer(
     options: List<String>,
     modifier: Modifier = Modifier
 ) {
-    if (allowShowQuestion) {
+    AnimatedVisibility(
+        allowShowQuestion,
+        enter = scaleIn() + expandVertically(expandFrom = Alignment.CenterVertically),
+        exit = scaleOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically)
+    ) {
         Card(
             modifier = modifier
                 .fillMaxWidth()
@@ -253,52 +280,16 @@ fun ShowButton(
                 }
             }
         ) {
-            if (showCheckButton) {
-                Text(stringResource(R.string.next))
-            } else {
-                Text(stringResource(R.string.check))
-            }
+            AnimatedVisibility(
+                showCheckButton,
+                enter = scaleIn() + expandVertically(expandFrom = Alignment.CenterVertically),
+                exit = scaleOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically)
+            ) { Text(stringResource(R.string.next)) }
+            AnimatedVisibility(
+                !showCheckButton,
+                enter = scaleIn() + expandVertically(expandFrom = Alignment.CenterVertically),
+                exit = scaleOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically)
+            ) { Text(stringResource(R.string.check)) }
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun SelectOptionPreview() {
-//    ShowQuestionScreen(
-//        scoreUiState = 1,
-//        navigateToResultPage = {},
-//        showCheckButton = true ,
-//        allowShowQuestion =  ,
-//        selectValue = ,
-//        selectedValue = ,
-//        allQuestion = ,
-//        onNextButtonClicked = { /*TODO*/ },
-//        modifier =
-//    )
-//}
-
-//@Preview
-//@Composable
-//fun SelectOptionPreview2() {
-//    ShowListOfQuestion(
-//        listOf<Question>(
-//            Question(
-//                "First question",
-//                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4")
-//            ),
-//            Question(
-//                "Second question",
-//                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4")
-//            ),
-//            Question(
-//                "Third question",
-//                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4")
-//            ),
-//            Question(
-//                "Forth question",
-//                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4")
-//            )
-//        )
-//    )
-//}

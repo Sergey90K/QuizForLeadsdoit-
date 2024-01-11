@@ -1,6 +1,14 @@
 package com.leadsdoit.quizforleadsdoit.ui.resultsScreen
 
 import android.app.Activity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +27,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -124,24 +133,49 @@ fun ShowButton(
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ShowTrueAnswer(answer: List<Answer>, modifier: Modifier) {
-    Column(modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))) {
-        answer.forEach { item ->
-            Card(modifier = modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))) {
-                    Text(
-                        text = item.question,
-                        style = MaterialTheme.typography.bodyMedium,
+
+    val visibleState = remember {
+        MutableTransitionState(false).apply {
+            targetState = true
+        }
+    }
+    AnimatedVisibility(
+        visibleState = visibleState,
+        enter = fadeIn(
+            animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)
+        ),
+        exit = fadeOut(),
+        modifier = modifier
+    ) {
+        Column(modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))) {
+            answer.forEach { item ->
+                Card(modifier = modifier
+                    .fillMaxWidth()
+                    .animateEnterExit(enter = slideInVertically(
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessVeryLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy
+                        ), initialOffsetY = { it }
                     )
-                    Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
-                    Text(
-                        text = item.answer,
-                        style = MaterialTheme.typography.bodyMedium,
                     )
+                ) {
+                    Column(modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))) {
+                        Text(
+                            text = item.question,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
+                        Text(
+                            text = item.answer,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
                 }
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
             }
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
         }
     }
 }
@@ -181,30 +215,3 @@ fun ShowCongratulation(result: Int, modifier: Modifier) {
         )
     }
 }
-
-//@Preview
-//@Composable
-//fun ShowRez() {
-//    ShowTrueAnswer(
-//        answer =
-//        listOf(
-//            Answer("Question one", "Answer one"),
-//            Answer("Question two", "Answer two"),
-//            Answer("Question tre", "Answer tre"),
-//            Answer("Question for", "Answer for")
-//        ), modifier = Modifier
-//    )
-//}
-
-//@Preview
-//@Composable
-//fun ShowRez2() {
-//    ShowResultScreen(
-//        answer = listOf(
-//            Answer("Question one", "Answer one"),
-//            Answer("Question two", "Answer two"),
-//            Answer("Question tre", "Answer tre"),
-//            Answer("Question for", "Answer for")
-//        ), result = 50, modifier = Modifier
-//    )
-//}

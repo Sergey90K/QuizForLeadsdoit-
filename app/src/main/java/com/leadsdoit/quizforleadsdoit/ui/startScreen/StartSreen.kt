@@ -27,13 +27,11 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.leadsdoit.quizforleadsdoit.R
 import com.leadsdoit.quizforleadsdoit.ui.AppViewModelProvider
 import com.leadsdoit.quizforleadsdoit.ui.navigation.NavigationDestination
-import com.leadsdoit.quizforleadsdoit.ui.theme.QuizForLeadsdoitTheme
 
 object StartDestination : NavigationDestination {
     override val route = "start"
@@ -47,6 +45,7 @@ fun StartScreen(
 ) {
     val uiState by viewModel.quizUiState.collectAsStateWithLifecycle()
     val questionUiState by viewModel.questionUiState.collectAsStateWithLifecycle()
+
     when (uiState) {
         is QuizUiState.Success -> {
             SuccessfulScreen(startAction = navigateToQuestionPage, modifier = Modifier)
@@ -97,7 +96,6 @@ fun SuccessfulScreen(startAction: () -> Unit, modifier: Modifier) {
                     style = MaterialTheme.typography.displayLarge,
                     modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
                     textAlign = TextAlign.Center
-
                 )
             }
             Column(
@@ -217,27 +215,3 @@ fun ShowButton(
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPrevies() {
-    QuizForLeadsdoitTheme(darkTheme = false) {
-        LoadingScreen()
-    }
-}
-
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPrevies2() {
-//    QuizForLeadsdoitTheme(darkTheme = false) {
-//        ErrorScreen(retryAction = { /*TODO*/ })
-//    }
-//}
-
-//@Preview()
-//@Composable
-//fun GreetingPrevies3() {
-//    QuizForLeadsdoitTheme(darkTheme = false) {
-//        SuccessfulScreen(startAction = {/*TODO*/ }, modifier = Modifier)
-//    }
-//}
