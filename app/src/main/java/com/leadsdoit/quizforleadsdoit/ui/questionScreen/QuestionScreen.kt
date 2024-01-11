@@ -1,5 +1,6 @@
 package com.leadsdoit.quizforleadsdoit.ui.questionScreen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,9 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -22,8 +26,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.leadsdoit.quizforleadsdoit.R
 import com.leadsdoit.quizforleadsdoit.ui.AppViewModelProvider
@@ -36,6 +43,7 @@ object QuestionDestination : NavigationDestination {
 
 @Composable
 fun QuestionScreen(
+    onCancelButtonClicked: () -> Unit,
     navigateToResultPage: (Int) -> Unit,
     viewModel: QuestionViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = AppViewModelProvider.Factory
@@ -48,6 +56,7 @@ fun QuestionScreen(
     val scoreUiState by viewModel.scoreUiState.collectAsStateWithLifecycle()
 
     ShowQuestionScreen(
+        onCancelButtonClicked = onCancelButtonClicked,
         scoreUiState = scoreUiState,
         navigateToResultPage = navigateToResultPage,
         showCheckButton = showCheckButtonUiState,
@@ -62,6 +71,7 @@ fun QuestionScreen(
 
 @Composable
 fun ShowQuestionScreen(
+    onCancelButtonClicked: () -> Unit,
     scoreUiState: Int,
     navigateToResultPage: (Int) -> Unit,
     showCheckButton: Boolean,
@@ -74,38 +84,80 @@ fun ShowQuestionScreen(
 ) {
     Box(contentAlignment = Alignment.Center) {
         Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            // verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ShowListOfQuestion(
-                scoreUiState = scoreUiState,
-                navigateToResultPage = navigateToResultPage,
-                showCheckButton = showCheckButton,
-                allowShowQuestion = allowShowQuestion,
-                selectValue = selectValue,
-                selectedValue = selectedValue,
-                allQuestion = allQuestion,
-                onCancelButtonClicked = {},
-                onNextButtonClicked = onNextButtonClicked,
-                modifier
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1F, true),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                if (!showCheckButton) {
+                    ShowCongratulation()
+                }else{
+                    ShowListOfQuestion(
+                        allowShowQuestion = allowShowQuestion,
+                        selectValue = selectValue,
+                        selectedValue = selectedValue,
+                        allQuestion = allQuestion,
+                        modifier = modifier
+                    )
+                }
+            }
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                ShowButton(
+                    scoreUiState = scoreUiState,
+                    navigateToResultPage = navigateToResultPage,
+                    showCheckButton = showCheckButton,
+                    selectedValue = selectedValue,
+                    onCancelButtonClicked = onCancelButtonClicked,
+                    onNextButtonClicked = onNextButtonClicked,
+                    modifier = modifier
+                )
+            }
         }
     }
 }
 
 @Composable
+fun ShowCongratulation() {
+    val imageModifier = Modifier
+        .size(dimensionResource(R.dimen.image_size))
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.congratulations_gold),
+            contentDescription = stringResource(R.string.computer_icon),
+            contentScale = ContentScale.Fit,
+            modifier = imageModifier
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_small)))
+        Text(
+            text = stringResource(R.string.congratulations_you),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
 fun ShowListOfQuestion(
-    scoreUiState: Int,
-    navigateToResultPage: (Int) -> Unit,
-    showCheckButton: Boolean,
     allowShowQuestion: Array<Boolean>,
     selectValue: (String) -> Unit,
     selectedValue: String,
     allQuestion: List<com.leadsdoit.quizforleadsdoit.data.Question>,
-    onCancelButtonClicked: () -> Unit,
-    onNextButtonClicked: () -> Unit,
     modifier: Modifier
 ) {
     LazyColumn() {
@@ -116,18 +168,6 @@ fun ShowListOfQuestion(
                 selectedValue = selectedValue,
                 question = item.question,
                 options = item.answer
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
-        }
-        item {
-            ShowButton(
-                scoreUiState = scoreUiState,
-                navigateToResultPage = navigateToResultPage,
-                showCheckButton = showCheckButton,
-                selectedValue = selectedValue,
-                onCancelButtonClicked = onCancelButtonClicked,
-                onNextButtonClicked = onNextButtonClicked,
-                modifier = modifier
             )
         }
     }
@@ -143,11 +183,19 @@ fun ShowListOfAnswer(
     modifier: Modifier = Modifier
 ) {
     if (allowShowQuestion) {
-        Card(modifier = modifier.fillMaxWidth()) {
+        Card(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(
+                    start = dimensionResource(R.dimen.padding_border),
+                    end = dimensionResource(R.dimen.padding_border)
+                )
+        ) {
             Column(modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))) {
                 Text(
                     text = question,
                     style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
                 options.forEach { item ->
@@ -156,7 +204,6 @@ fun ShowListOfAnswer(
                             selected = selectedValue == item,
                             onClick = {
                                 selectValue(item)
-                                //  onSelectionChanged(item)
                             }
                         ),
                         verticalAlignment = Alignment.CenterVertically
@@ -165,10 +212,9 @@ fun ShowListOfAnswer(
                             selected = selectedValue == item,
                             onClick = {
                                 selectValue(item)
-                                // onSelectionChanged(item)
                             }
                         )
-                        Text(item)
+                        Text(text = item, style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }
@@ -220,28 +266,15 @@ fun ShowButton(
 //@Composable
 //fun SelectOptionPreview() {
 //    ShowQuestionScreen(
-//        listOf<Question>(
-//            Question(
-//                "First question",
-//                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
-//                0
-//            ),
-//            Question(
-//                "Second question",
-//                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
-//                4
-//            ),
-//            Question(
-//                "Third question",
-//                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
-//                4
-//            ),
-//            Question(
-//                "Forth question",
-//                listOf<String>("Option 1", "Option 2", "Option 3", "Option 4"),
-//                1
-//            )
-//        ), Modifier
+//        scoreUiState = 1,
+//        navigateToResultPage = {},
+//        showCheckButton = true ,
+//        allowShowQuestion =  ,
+//        selectValue = ,
+//        selectedValue = ,
+//        allQuestion = ,
+//        onNextButtonClicked = { /*TODO*/ },
+//        modifier =
 //    )
 //}
 

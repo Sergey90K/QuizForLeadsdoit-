@@ -36,8 +36,9 @@ class QuestionViewModel(private val questionRepository: QuestionRepository) : Vi
         if (counter.value < questionUiState.value.question.size) {
             if (questionUiState.value.question[counter.value].answer[questionUiState.value.question[counter.value].rightAnswer] ==
                 selectedValueUiState.value
-            ) {trueAnswer++
-                _scoreUiState.value = 100/questionUiState.value.question.size*trueAnswer
+            ) {
+                trueAnswer++
+                _scoreUiState.value = 100 / questionUiState.value.question.size * trueAnswer
             } else {
 
             }

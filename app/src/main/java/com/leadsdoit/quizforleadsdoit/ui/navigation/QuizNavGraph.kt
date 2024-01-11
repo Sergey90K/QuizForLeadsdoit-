@@ -25,11 +25,16 @@ fun QuizNavHost(navController: NavHostController, modifier: Modifier = Modifier)
             StartScreen(navigateToQuestionPage = { navController.navigate(QuestionDestination.route) })
         }
         composable(route = QuestionDestination.route) {
-            QuestionScreen(navigateToResultPage = { navController.navigate("${ResultDestination.route}/$it") })
+            QuestionScreen(
+                onCancelButtonClicked = { navController.navigateUp() },
+                navigateToResultPage = { navController.navigate("${ResultDestination.route}/$it") })
         }
-        composable(route = ResultDestination.routeWithArgs, arguments = listOf(navArgument(ResultDestination.sourceArgs){
-            type = NavType.IntType
-        }) ) {
+        composable(
+            route = ResultDestination.routeWithArgs,
+            arguments = listOf(navArgument(ResultDestination.sourceArgs) {
+                type = NavType.IntType
+            })
+        ) {
             ResultScreen()
         }
     }

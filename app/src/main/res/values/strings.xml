@@ -19,4 +19,5 @@
     <string name="company_icon">Company icon</string>
     <string name="quiz">Quiz</string>
     <string name="offline">Offline</string>
+    <string name="congratulations_you">Congratulations, you have answered all the questions. \n Now you can find out your result.</string>
 </resources>
