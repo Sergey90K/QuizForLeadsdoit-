@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.leadsdoit.quizforleadsdoit.R
 import com.leadsdoit.quizforleadsdoit.network.Answer
@@ -36,15 +39,25 @@ object ResultDestination : NavigationDestination {
 }
 
 @Composable
-fun ResultScreen(viewModel: ResultViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = AppViewModelProvider.Factory)) {
+fun ResultScreen(
+    onRepeatButtonClicked: () -> Unit,
+    viewModel: ResultViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = AppViewModelProvider.Factory)
+) {
     val resultUiState by viewModel.questionUiState.collectAsStateWithLifecycle()
     val sourceUiState by viewModel.sourceUiState.collectAsStateWithLifecycle()
     val activity = (LocalContext.current as? Activity)
-    ShowResultScreen(onExitButtonClicked = {activity?.finish()},answer = resultUiState.answer, result = sourceUiState, modifier = Modifier)
+    ShowResultScreen(
+        onRepeatButtonClicked = onRepeatButtonClicked,
+        onExitButtonClicked = { activity?.finish() },
+        answer = resultUiState.answer,
+        result = sourceUiState,
+        modifier = Modifier
+    )
 }
 
 @Composable
 fun ShowResultScreen(
+    onRepeatButtonClicked: () -> Unit,
     onExitButtonClicked: () -> Unit,
     answer: List<Answer>,
     result: Int,
@@ -52,17 +65,33 @@ fun ShowResultScreen(
 ) {
     Box(contentAlignment = Alignment.Center) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            ShowCongratulation(result = result, modifier = modifier)
-            ShowTrueAnswer(answer = answer, modifier = modifier)
-            ShowButton(
-                onExitButtonClicked = onExitButtonClicked,
-                onRepeatButtonClicked = {},
-                modifier
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1F, true),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                ShowCongratulation(result = result, modifier = modifier)
+                ShowTrueAnswer(answer = answer, modifier = modifier)
+            }
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                ShowButton(
+                    onExitButtonClicked = onExitButtonClicked,
+                    onRepeatButtonClicked = onRepeatButtonClicked,
+                    modifier
+                )
+            }
         }
     }
 }
@@ -76,20 +105,21 @@ fun ShowButton(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            //.weight(1f, false)
             .padding(dimensionResource(R.dimen.padding_medium)),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
         verticalAlignment = Alignment.Bottom
     ) {
-        OutlinedButton(modifier = Modifier.weight(1f), onClick = onExitButtonClicked) {
+        OutlinedButton(
+            modifier = Modifier.weight(1f),
+            onClick = onExitButtonClicked
+        ) {
             Text(stringResource(R.string.exit_the_program))
         }
         Button(
             modifier = Modifier.weight(1f),
-            //enabled = selectedValue.isNotEmpty(),
             onClick = onRepeatButtonClicked
         ) {
-            Text(stringResource(R.string.repeat_game))
+            Text(stringResource(R.string.repeat))
         }
     }
 }
@@ -118,18 +148,31 @@ fun ShowTrueAnswer(answer: List<Answer>, modifier: Modifier) {
 
 @Composable
 fun ShowCongratulation(result: Int, modifier: Modifier) {
+    val successfulLevel = 50
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-
     ) {
-        Text(
-            text = stringResource(R.string.congratulations_you_passed_the_quiz),
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))
-        )
+        if (result > successfulLevel) {
+            Text(
+                text = stringResource(R.string.congratulations_you_passed_the_quiz),
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelMedium,
+            )
+        } else {
+            Text(
+                text = stringResource(R.string.sorry_but_you_re_not_level_enough),
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelMedium,
+            )
+        }
         Text(
             text = stringResource(R.string.your_result, result),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(
                 bottom = dimensionResource(R.dimen.padding_medium),
                 start = dimensionResource(R.dimen.padding_medium),

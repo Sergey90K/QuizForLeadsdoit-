@@ -35,7 +35,12 @@ fun QuizNavHost(navController: NavHostController, modifier: Modifier = Modifier)
                 type = NavType.IntType
             })
         ) {
-            ResultScreen()
+            ResultScreen(onRepeatButtonClicked = {
+                navController.popBackStack(
+                    StartDestination.route,
+                    inclusive = false
+                )
+            })
         }
     }
 }

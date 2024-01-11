@@ -50,4 +50,9 @@ val Typography = Typography(
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp
     ),
+    labelMedium = TextStyle(
+        fontFamily = AbrilFatface,
+        fontWeight = FontWeight.Normal,
+        fontSize = 22.sp
+    )
 )

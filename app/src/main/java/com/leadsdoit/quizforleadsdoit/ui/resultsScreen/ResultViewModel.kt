@@ -30,18 +30,6 @@ class ResultViewModel(
     private val _sourceUiState = MutableStateFlow(sourceArgs)
     val sourceUiState = _sourceUiState.asStateFlow()
 
-//    init {
-//        countSource()
-//    }
-//
-//    private fun countSource() {
-//        if (questionUiState.value.answer.isEmpty()) {
-//            _sourceUiState.value = 100/5*sourceArgs
-//        } else {
-//            _sourceUiState.value = 100 / questionUiState.value.answer.size * sourceArgs
-//        }
-//    }
-
     private fun fromQuestionToAnswer(question: List<Question>): AnswerUiState {
         if (question.isEmpty()) {
             return AnswerUiState()
@@ -50,7 +38,6 @@ class ResultViewModel(
             var outputData: Array<Answer> = arrayOf()
             for (item in question) {
                 outputData += Answer(item.question, item.answer[item.rightAnswer])
-                //outputData.answer.set(counter, Answer(item.question, item.answer[item.rightAnswer]))
                 counter++
             }
             return AnswerUiState(outputData.toList())
