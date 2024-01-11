@@ -21,4 +21,6 @@
     <string name="offline">Offline</string>
     <string name="congratulations_you">Congratulations, you have answered all the questions. \n Now you can find out your result.</string>
     <string name="sorry_but_you_re_not_level_enough">Sorry, but you\'re not level enough</string>
+    <string name="status_change_button">Status change button</string>
+    <string name="loading">Loading</string>
 </resources>

@@ -49,6 +49,7 @@ object QuestionDestination : NavigationDestination {
 
 @Composable
 fun QuestionScreen(
+    transformData: Boolean,
     onCancelButtonClicked: () -> Unit,
     navigateToResultPage: (Int) -> Unit,
     viewModel: QuestionViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
@@ -62,6 +63,7 @@ fun QuestionScreen(
     val scoreUiState by viewModel.scoreUiState.collectAsStateWithLifecycle()
 
     ShowQuestionScreen(
+        transformData = transformData,
         onCancelButtonClicked = onCancelButtonClicked,
         scoreUiState = scoreUiState,
         navigateToResultPage = navigateToResultPage,
@@ -77,6 +79,7 @@ fun QuestionScreen(
 
 @Composable
 fun ShowQuestionScreen(
+    transformData: Boolean,
     onCancelButtonClicked: () -> Unit,
     scoreUiState: Int,
     navigateToResultPage: (Int) -> Unit,
@@ -88,7 +91,6 @@ fun ShowQuestionScreen(
     onNextButtonClicked: () -> Unit,
     modifier: Modifier
 ) {
-
     Box(
         contentAlignment = Alignment.Center
     ) {
@@ -113,15 +115,17 @@ fun ShowQuestionScreen(
                         fullHeight / 2
                     },
                 ) {
-                    ShowCongratulation()
+                    ShowCongratulation(transformData = transformData)
                 }
                 AnimatedVisibility(
-                    showCheckButton, enter = expandVertically(expandFrom = Alignment.Top) { 20 },
+                    showCheckButton,
+                    enter = expandVertically(expandFrom = Alignment.Top) { 20 },
                     exit = shrinkVertically(animationSpec = tween()) { fullHeight ->
                         fullHeight / 2
                     },
                 ) {
                     ShowListOfQuestion(
+                        transformData = transformData,
                         allowShowQuestion = allowShowQuestion,
                         selectValue = selectValue,
                         selectedValue = selectedValue,
@@ -147,12 +151,10 @@ fun ShowQuestionScreen(
             }
         }
     }
-
-
 }
 
 @Composable
-fun ShowCongratulation() {
+fun ShowCongratulation(transformData: Boolean) {
     val imageModifier = Modifier
         .size(dimensionResource(R.dimen.image_size))
     Column(
@@ -168,7 +170,11 @@ fun ShowCongratulation() {
         Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_small)))
         Text(
             text = stringResource(R.string.congratulations_you),
-            style = MaterialTheme.typography.bodyLarge,
+            style = if (transformData) {
+                MaterialTheme.typography.bodyLarge
+            } else {
+                MaterialTheme.typography.labelLarge
+            },
             modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
             textAlign = TextAlign.Center
         )
@@ -177,6 +183,7 @@ fun ShowCongratulation() {
 
 @Composable
 fun ShowListOfQuestion(
+    transformData: Boolean,
     allowShowQuestion: Array<Boolean>,
     selectValue: (String) -> Unit,
     selectedValue: String,
@@ -186,6 +193,7 @@ fun ShowListOfQuestion(
     LazyColumn() {
         itemsIndexed(allQuestion) { index, item ->
             ShowListOfAnswer(
+                transformData = transformData,
                 allowShowQuestion = allowShowQuestion[index],
                 selectValue = selectValue,
                 selectedValue = selectedValue,
@@ -198,6 +206,7 @@ fun ShowListOfQuestion(
 
 @Composable
 fun ShowListOfAnswer(
+    transformData: Boolean,
     allowShowQuestion: Boolean,
     selectValue: (String) -> Unit,
     selectedValue: String,
@@ -221,7 +230,11 @@ fun ShowListOfAnswer(
             Column(modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))) {
                 Text(
                     text = question,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = if (transformData) {
+                        MaterialTheme.typography.bodyMedium
+                    } else {
+                        MaterialTheme.typography.labelSmall
+                    },
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
@@ -241,7 +254,13 @@ fun ShowListOfAnswer(
                                 selectValue(item)
                             }
                         )
-                        Text(text = item, style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            text = item, style = if (transformData) {
+                                MaterialTheme.typography.bodyMedium
+                            } else {
+                                MaterialTheme.typography.labelSmall
+                            }
+                        )
                     }
                 }
             }

@@ -15,17 +15,24 @@ import com.leadsdoit.quizforleadsdoit.ui.startScreen.StartDestination
 import com.leadsdoit.quizforleadsdoit.ui.startScreen.StartScreen
 
 @Composable
-fun QuizNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
+fun QuizNavHost(
+    transformData: Boolean,
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
     NavHost(
         navController = navController,
         startDestination = StartDestination.route,
         modifier = modifier
     ) {
         composable(route = StartDestination.route) {
-            StartScreen(navigateToQuestionPage = { navController.navigate(QuestionDestination.route) })
+            StartScreen(
+                transformData = transformData,
+                navigateToQuestionPage = { navController.navigate(QuestionDestination.route) })
         }
         composable(route = QuestionDestination.route) {
             QuestionScreen(
+                transformData = transformData,
                 onCancelButtonClicked = { navController.navigateUp() },
                 navigateToResultPage = { navController.navigate("${ResultDestination.route}/$it") })
         }
@@ -35,7 +42,7 @@ fun QuizNavHost(navController: NavHostController, modifier: Modifier = Modifier)
                 type = NavType.IntType
             })
         ) {
-            ResultScreen(onRepeatButtonClicked = {
+            ResultScreen(transformData = transformData, onRepeatButtonClicked = {
                 navController.popBackStack(
                     StartDestination.route,
                     inclusive = false

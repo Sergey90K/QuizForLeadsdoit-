@@ -28,15 +28,15 @@ val Typography = Typography(
     displayMedium = TextStyle(
         fontFamily = Montserrat,
         fontWeight = FontWeight.Bold,
-        fontSize = 20.sp
+        fontSize = 32.sp
     ),
-    labelSmall = TextStyle(
+    displaySmall = TextStyle(
         fontFamily = Montserrat,
         fontWeight = FontWeight.Bold,
-        fontSize = 14.sp
+        fontSize = 18.sp
     ),
     bodyLarge = TextStyle(
-        fontFamily = LemonRegular,
+        fontFamily = Montserrat,
         fontWeight = FontWeight.Normal,
         fontSize = 22.sp
     ),
@@ -48,11 +48,27 @@ val Typography = Typography(
     labelLarge = TextStyle(
         fontFamily = LemonRegular,
         fontWeight = FontWeight.Bold,
-        fontSize = 16.sp
+        fontSize = 18.sp
     ),
     labelMedium = TextStyle(
         fontFamily = AbrilFatface,
         fontWeight = FontWeight.Normal,
-        fontSize = 22.sp
-    )
+        fontSize = 16.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Bold,
+        fontSize = 12.sp
+    ),
+    headlineLarge = TextStyle(
+        fontFamily = LemonRegular,
+        fontWeight = FontWeight.Normal,
+        fontSize = 32.sp
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp
+    ),
+
 )

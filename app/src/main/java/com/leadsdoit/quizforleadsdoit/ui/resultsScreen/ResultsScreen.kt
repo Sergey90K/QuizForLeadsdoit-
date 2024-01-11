@@ -49,6 +49,7 @@ object ResultDestination : NavigationDestination {
 
 @Composable
 fun ResultScreen(
+    transformData: Boolean,
     onRepeatButtonClicked: () -> Unit,
     viewModel: ResultViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -56,6 +57,7 @@ fun ResultScreen(
     val sourceUiState by viewModel.sourceUiState.collectAsStateWithLifecycle()
     val activity = (LocalContext.current as? Activity)
     ShowResultScreen(
+        transformData = transformData,
         onRepeatButtonClicked = onRepeatButtonClicked,
         onExitButtonClicked = { activity?.finish() },
         answer = resultUiState.answer,
@@ -66,6 +68,7 @@ fun ResultScreen(
 
 @Composable
 fun ShowResultScreen(
+    transformData: Boolean,
     onRepeatButtonClicked: () -> Unit,
     onExitButtonClicked: () -> Unit,
     answer: List<Answer>,
@@ -87,8 +90,12 @@ fun ShowResultScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                ShowCongratulation(result = result, modifier = modifier)
-                ShowTrueAnswer(answer = answer, modifier = modifier)
+                ShowCongratulation(
+                    transformData = transformData,
+                    result = result,
+                    modifier = modifier
+                )
+                ShowTrueAnswer(transformData = transformData, answer = answer, modifier = modifier)
             }
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -135,8 +142,7 @@ fun ShowButton(
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ShowTrueAnswer(answer: List<Answer>, modifier: Modifier) {
-
+fun ShowTrueAnswer(transformData: Boolean, answer: List<Answer>, modifier: Modifier) {
     val visibleState = remember {
         MutableTransitionState(false).apply {
             targetState = true
@@ -165,12 +171,20 @@ fun ShowTrueAnswer(answer: List<Answer>, modifier: Modifier) {
                     Column(modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))) {
                         Text(
                             text = item.question,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = if (transformData) {
+                                MaterialTheme.typography.bodyMedium
+                            } else {
+                                MaterialTheme.typography.labelSmall
+                            },
                         )
                         Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
                         Text(
                             text = item.answer,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = if (transformData) {
+                                MaterialTheme.typography.bodyMedium
+                            } else {
+                                MaterialTheme.typography.labelSmall
+                            },
                         )
                     }
                 }
@@ -181,7 +195,7 @@ fun ShowTrueAnswer(answer: List<Answer>, modifier: Modifier) {
 }
 
 @Composable
-fun ShowCongratulation(result: Int, modifier: Modifier) {
+fun ShowCongratulation(transformData: Boolean, result: Int, modifier: Modifier) {
     val successfulLevel = 50
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -193,20 +207,32 @@ fun ShowCongratulation(result: Int, modifier: Modifier) {
                 text = stringResource(R.string.congratulations_you_passed_the_quiz),
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.labelMedium,
+                style = if (transformData) {
+                    MaterialTheme.typography.labelMedium
+                } else {
+                    MaterialTheme.typography.headlineMedium
+                },
             )
         } else {
             Text(
                 text = stringResource(R.string.sorry_but_you_re_not_level_enough),
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.labelMedium,
+                style = if (transformData) {
+                    MaterialTheme.typography.labelMedium
+                } else {
+                    MaterialTheme.typography.headlineMedium
+                },
             )
         }
         Text(
             text = stringResource(R.string.your_result, result),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge,
+            style = if (transformData) {
+                MaterialTheme.typography.bodyLarge
+            } else {
+                MaterialTheme.typography.labelLarge
+            },
             modifier = Modifier.padding(
                 bottom = dimensionResource(R.dimen.padding_medium),
                 start = dimensionResource(R.dimen.padding_medium),

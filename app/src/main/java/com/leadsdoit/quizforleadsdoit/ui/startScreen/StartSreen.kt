@@ -40,6 +40,7 @@ object StartDestination : NavigationDestination {
 
 @Composable
 fun StartScreen(
+    transformData: Boolean,
     navigateToQuestionPage: () -> Unit,
     viewModel: StartViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -48,15 +49,20 @@ fun StartScreen(
 
     when (uiState) {
         is QuizUiState.Success -> {
-            SuccessfulScreen(startAction = navigateToQuestionPage, modifier = Modifier)
+            SuccessfulScreen(
+                transformData = transformData,
+                startAction = navigateToQuestionPage,
+                modifier = Modifier
+            )
         }
 
         is QuizUiState.Loading -> {
-            LoadingScreen()
+            LoadingScreen(transformData = transformData)
         }
 
         is QuizUiState.Error -> {
             ErrorScreen(
+                transformData = transformData,
                 navigateToQuestionPage = navigateToQuestionPage,
                 permissionOfflineUiState = questionUiState.question.isNotEmpty(),
                 retryAction = viewModel::trayLoadData
@@ -66,7 +72,7 @@ fun StartScreen(
 }
 
 @Composable
-fun SuccessfulScreen(startAction: () -> Unit, modifier: Modifier) {
+fun SuccessfulScreen(transformData: Boolean, startAction: () -> Unit, modifier: Modifier) {
     val imageModifier = Modifier
         .size(dimensionResource(R.dimen.image_size))
     Box(contentAlignment = Alignment.Center) {
@@ -93,9 +99,13 @@ fun SuccessfulScreen(startAction: () -> Unit, modifier: Modifier) {
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_small)))
                 Text(
                     text = stringResource(R.string.quiz_on_knowledge_of_computer_components),
-                    style = MaterialTheme.typography.displayLarge,
+                    style = if (transformData) {
+                        MaterialTheme.typography.displayLarge
+                    } else {
+                        MaterialTheme.typography.displayMedium
+                    },
                     modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             }
             Column(
@@ -113,7 +123,7 @@ fun SuccessfulScreen(startAction: () -> Unit, modifier: Modifier) {
 }
 
 @Composable
-fun LoadingScreen(modifier: Modifier = Modifier) {
+fun LoadingScreen(transformData: Boolean, modifier: Modifier = Modifier) {
     Box(contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -121,8 +131,12 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Loading",
-                style = MaterialTheme.typography.displayLarge,
+                text = stringResource(R.string.loading),
+                style = if (transformData) {
+                    MaterialTheme.typography.displayLarge
+                } else {
+                    MaterialTheme.typography.displayMedium
+                },
                 modifier = Modifier.padding(all = dimensionResource(R.dimen.padding_small))
             )
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
@@ -137,6 +151,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun ErrorScreen(
+    transformData: Boolean,
     navigateToQuestionPage: () -> Unit,
     permissionOfflineUiState: Boolean,
     retryAction: () -> Unit,
@@ -164,7 +179,11 @@ fun ErrorScreen(
                 )
                 Text(
                     text = stringResource(R.string.failed_to_load_data_from_server),
-                    style = MaterialTheme.typography.labelLarge,
+                    style = if (transformData) {
+                        MaterialTheme.typography.labelLarge
+                    } else {
+                        MaterialTheme.typography.displaySmall
+                    },
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))
                 )
@@ -205,7 +224,6 @@ fun ShowButton(
         ) {
             Text(stringResource(R.string.retry))
         }
-
         Button(
             modifier = Modifier.weight(1f),
             onClick = navigateToQuestionPage,
