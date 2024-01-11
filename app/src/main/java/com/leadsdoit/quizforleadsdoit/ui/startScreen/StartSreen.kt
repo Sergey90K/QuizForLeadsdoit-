@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +26,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,9 +46,10 @@ fun StartScreen(
     viewModel: StartViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState by viewModel.quizUiState.collectAsStateWithLifecycle()
+    val questionUiState by viewModel.questionUiState.collectAsStateWithLifecycle()
     when (uiState) {
         is QuizUiState.Success -> {
-            SuccessfulScreen(startAction =  navigateToQuestionPage , modifier = Modifier)
+            SuccessfulScreen(startAction = navigateToQuestionPage, modifier = Modifier)
         }
 
         is QuizUiState.Loading -> {
@@ -52,119 +57,59 @@ fun StartScreen(
         }
 
         is QuizUiState.Error -> {
-            ErrorScreen(retryAction = { /*TODO*/ })
+            ErrorScreen(
+                navigateToQuestionPage = navigateToQuestionPage,
+                permissionOfflineUiState = questionUiState.question.isNotEmpty(),
+                retryAction = viewModel::trayLoadData
+            )
         }
     }
-}
-
-@Composable
-fun Test() {
-
 }
 
 @Composable
 fun SuccessfulScreen(startAction: () -> Unit, modifier: Modifier) {
     val imageModifier = Modifier
         .size(dimensionResource(R.dimen.image_size))
-    //.clip(RoundedCornerShape(16.dp))
-    //.border(BorderStroke(1.dp, Color.Black))
-    //.background(Color.Blue)
-//    Column(
-//        modifier = modifier,
-//        verticalArrangement = Arrangement.SpaceBetween
-//    ) {
-//        Column(
-//            modifier = Modifier.fillMaxWidth(),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
-//        ) {
-//            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
-//            Image(
-//                painter = painterResource(id = R.drawable.media_design_hydropro_v2_tower_128),
-//                contentDescription = stringResource(R.string.computer_icon),
-//                contentScale = ContentScale.Fit,
-//                modifier = imageModifier
-//                //     .clickable {  }
-//            )
-//            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
-//            Text(
-//                text = stringResource(R.string.quiz_on_knowledge_of_computer_components),
-//                style = MaterialTheme.typography.bodyMedium,
-//               // modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))
-//            )
-//            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_small)))
-//
-//        }
-//     //   Row(modifier = Modifier.weight(1f, false)) {
-//            Column(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//                //verticalArrangement = Arrangement.SpaceBetween
-//              //      dimensionResource(id = R.dimen.padding_medium)
-//                ){
-//                    Button(onClick = startAction) {
-//                        Text(stringResource(R.string.to_begin))
-//                    }
-//
-//                }
-//       // }
-//
-//    }
     Box(contentAlignment = Alignment.Center) {
         Column(
-            modifier = Modifier.fillMaxSize(),
-            // verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1F, true),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+                verticalArrangement = Arrangement.Center,
             ) {
-                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
                 Image(
                     painter = painterResource(id = R.drawable.media_design_hydropro_v2_tower_128),
                     contentDescription = stringResource(R.string.computer_icon),
                     contentScale = ContentScale.Fit,
                     modifier = imageModifier
-                    //     .clickable {  }
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_small)))
                 Text(
                     text = stringResource(R.string.quiz_on_knowledge_of_computer_components),
                     style = MaterialTheme.typography.displayLarge,
-                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
+                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                    textAlign = TextAlign.Center
 
-                    )
-                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_small)))
-
+                )
             }
-//            Image(
-//                painter = painterResource(id = R.drawable.media_design_hydropro_v2_tower_128),
-//                contentDescription = stringResource(R.string.computer_icon),
-//                contentScale = ContentScale.Fit,
-//                modifier = imageModifier
-//                //     .clickable {  }
-//            )
-//            Text(
-//                text = stringResource(R.string.quiz_on_knowledge_of_computer_components),
-//                style = MaterialTheme.typography.bodyMedium,
-//                modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))
-//            )
-
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+                verticalArrangement = Arrangement.Bottom
             ) {
-                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
                 Button(onClick = startAction) {
                     Text(stringResource(R.string.to_begin))
                 }
-                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_small)))
             }
-
         }
     }
 }
@@ -177,17 +122,16 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            CircularProgressIndicator(
-                modifier = Modifier.width(150.dp),
-                color = MaterialTheme.colorScheme.secondary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_loading)))
             Text(
                 text = "Loading",
                 style = MaterialTheme.typography.displayLarge,
                 modifier = Modifier.padding(all = dimensionResource(R.dimen.padding_small))
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
+            CircularProgressIndicator(
+                modifier = Modifier.width(150.dp),
+                color = MaterialTheme.colorScheme.secondary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
             )
         }
     }
@@ -195,27 +139,81 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun ErrorScreen(
+    navigateToQuestionPage: () -> Unit,
+    permissionOfflineUiState: Boolean,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(contentAlignment = Alignment.Center) {
         Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_connection_error),
-                contentDescription = stringResource(R.string.connection_error)
-            )
-            Text(
-                text = stringResource(R.string.failed_to_load_data_from_server),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))
-            )
-            Button(onClick = retryAction) {
-                Text(stringResource(R.string.retry))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1F, true)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_connection_error),
+                    contentDescription = stringResource(R.string.connection_error)
+                )
+                Text(
+                    text = stringResource(R.string.failed_to_load_data_from_server),
+                    style = MaterialTheme.typography.labelLarge,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))
+                )
             }
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                ShowButton(
+                    navigateToQuestionPage = navigateToQuestionPage,
+                    retryAction = retryAction,
+                    permissionOfflineUiState = permissionOfflineUiState,
+                    modifier = modifier
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ShowButton(
+    navigateToQuestionPage: () -> Unit,
+    retryAction: () -> Unit,
+    permissionOfflineUiState: Boolean,
+    modifier: Modifier
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(dimensionResource(R.dimen.padding_medium)),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Button(
+            modifier = Modifier.weight(1f),
+            onClick = retryAction
+        ) {
+            Text(stringResource(R.string.retry))
+        }
+
+        Button(
+            modifier = Modifier.weight(1f),
+            onClick = navigateToQuestionPage,
+            enabled = permissionOfflineUiState
+        ) {
+            Text(stringResource(R.string.offline))
         }
     }
 }
@@ -228,18 +226,18 @@ fun GreetingPrevies() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPrevies2() {
-    QuizForLeadsdoitTheme(darkTheme = false) {
-        ErrorScreen(retryAction = { /*TODO*/ })
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPrevies2() {
+//    QuizForLeadsdoitTheme(darkTheme = false) {
+//        ErrorScreen(retryAction = { /*TODO*/ })
+//    }
+//}
 
-@Preview()
-@Composable
-fun GreetingPrevies3() {
-    QuizForLeadsdoitTheme(darkTheme = false) {
-        SuccessfulScreen(startAction = {/*TODO*/ }, modifier = Modifier)
-    }
-}
+//@Preview()
+//@Composable
+//fun GreetingPrevies3() {
+//    QuizForLeadsdoitTheme(darkTheme = false) {
+//        SuccessfulScreen(startAction = {/*TODO*/ }, modifier = Modifier)
+//    }
+//}

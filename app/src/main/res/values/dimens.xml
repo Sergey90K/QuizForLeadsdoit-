@@ -3,6 +3,8 @@
 <resources>
     <dimen name="padding_small">8dp</dimen>
     <dimen name="padding_medium">16dp</dimen>
+    <dimen name="padding_big">22dp</dimen>
     <dimen name="image_size">250dp</dimen>
     <dimen name="padding_loading">120dp</dimen>
+    <dimen name="logo_size">64dp</dimen>
 </resources>

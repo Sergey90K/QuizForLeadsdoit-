@@ -2,7 +2,7 @@
     <string name="app_name">QuizForLeadsdoit</string>
     <string name="connection_error">connection error icon</string>
     <string name="retry">retry</string>
-    <string name="failed_to_load_data_from_server">Failed to load data from server</string>
+    <string name="failed_to_load_data_from_server">Failed to load data from server \n But if the data was downloaded earlier, you can play offline </string>
     <string name="computer_icon">Computer icon</string>
     <string name="quiz_on_knowledge_of_computer_components">Quiz on knowledge of computer components</string>
     <string name="to_begin">To begin</string>
@@ -15,4 +15,8 @@
     <string name="questions_page">Questions page</string>
     <string name="results_page">Results page</string>
     <string name="check">Check</string>
+    <string name="back_button">Back button</string>
+    <string name="company_icon">Company icon</string>
+    <string name="quiz">Quiz</string>
+    <string name="offline">Offline</string>
 </resources>

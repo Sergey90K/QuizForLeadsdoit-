@@ -5,12 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.leadsdoit.quizforleadsdoit.data.QuestionRepository
 import com.leadsdoit.quizforleadsdoit.data.QuizRepository
 import com.leadsdoit.quizforleadsdoit.network.Question
+import com.leadsdoit.quizforleadsdoit.ui.questionScreen.QuestionUiState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import okio.IOException
-
 
 sealed interface QuizUiState {
     data class Success(val quizQuestion: List<Question>) : QuizUiState
@@ -26,6 +29,14 @@ class StartViewModel(
     private val _quizUiState = MutableStateFlow<QuizUiState>(QuizUiState.Loading)
     var quizUiState: StateFlow<QuizUiState> = _quizUiState.asStateFlow()
 
+    val questionUiState: StateFlow<QuestionUiState> =
+        questionRepository.getAllStream().map { QuestionUiState(it) }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+                initialValue = QuestionUiState()
+            )
+
     init {
         getQuizNetwork()
     }
@@ -39,6 +50,11 @@ class StartViewModel(
             }
             writeToDatabase()
         }
+    }
+
+    fun trayLoadData() {
+        _quizUiState.value = QuizUiState.Loading
+        getQuizNetwork()
     }
 
     private suspend fun writeToDatabase() {
@@ -57,20 +73,13 @@ class StartViewModel(
                     )
                 }
             }
+
             is QuizUiState.Error -> {}
             is QuizUiState.Loading -> {}
         }
     }
 
-//    companion object {
-//        val Factory: ViewModelProvider.Factory = viewModelFactory {
-//            initializer {
-//                val application =
-//                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as QuizApplication)
-//                val quizRepository= application.container.quizRepository
-//                StartViewModel(quizRepository = quizRepository)
-//
-//            }
-//        }
-//    }
+    companion object {
+        private const val TIMEOUT_MILLIS = 5_000L
+    }
 }

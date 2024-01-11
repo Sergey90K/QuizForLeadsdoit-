@@ -80,7 +80,7 @@ fun ShowQuestionScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ShowListOfQuestion(
-                scoreUiState =scoreUiState,
+                scoreUiState = scoreUiState,
                 navigateToResultPage = navigateToResultPage,
                 showCheckButton = showCheckButton,
                 allowShowQuestion = allowShowQuestion,
@@ -97,7 +97,7 @@ fun ShowQuestionScreen(
 
 @Composable
 fun ShowListOfQuestion(
-    scoreUiState : Int,
+    scoreUiState: Int,
     navigateToResultPage: (Int) -> Unit,
     showCheckButton: Boolean,
     allowShowQuestion: Array<Boolean>,
@@ -178,7 +178,7 @@ fun ShowListOfAnswer(
 
 @Composable
 fun ShowButton(
-    scoreUiState : Int,
+    scoreUiState: Int,
     navigateToResultPage: (Int) -> Unit,
     showCheckButton: Boolean,
     selectedValue: String,
@@ -189,7 +189,6 @@ fun ShowButton(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            //.weight(1f, false)
             .padding(dimensionResource(R.dimen.padding_medium)),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
         verticalAlignment = Alignment.Bottom
@@ -213,7 +212,6 @@ fun ShowButton(
             } else {
                 Text(stringResource(R.string.check))
             }
-
         }
     }
 }
