@@ -3,6 +3,6 @@ package com.leadsdoit.quizforleadsdoit.network
 import retrofit2.http.GET
 
 interface QuizApiService {
-    @GET("67e3b205-1886-4d6b-9453-f01d2666e575")
+    @GET("6e09404b-65bb-4df3-b5d4-6bf05c1d88b5")
     suspend fun getQuestion(): List<Question>
 }
