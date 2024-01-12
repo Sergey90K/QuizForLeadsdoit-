@@ -91,7 +91,7 @@ fun SuccessfulScreen(transformData: Boolean, startAction: () -> Unit, modifier: 
                 verticalArrangement = Arrangement.Center,
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.media_design_hydropro_v2_tower_128),
+                    painter = painterResource(id = R.drawable.media_design_hydropro_v2_tower_512),
                     contentDescription = stringResource(R.string.computer_icon),
                     contentScale = ContentScale.Fit,
                     modifier = imageModifier
