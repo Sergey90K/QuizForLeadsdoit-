@@ -1,5 +1,8 @@
 package com.leadsdoit.quizforleadsdoit.ui.startScreen
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,26 +50,32 @@ fun StartScreen(
     val uiState by viewModel.quizUiState.collectAsStateWithLifecycle()
     val questionUiState by viewModel.questionUiState.collectAsStateWithLifecycle()
 
-    when (uiState) {
-        is QuizUiState.Success -> {
-            SuccessfulScreen(
-                transformData = transformData,
-                startAction = navigateToQuestionPage,
-                modifier = Modifier
-            )
-        }
+    Crossfade(
+        targetState = uiState,
+        label = "Box state",
+        animationSpec = tween(durationMillis = 800, easing = FastOutLinearInEasing)
+    ) { uiStateIn ->
+        when (uiStateIn) {
+            is QuizUiState.Success -> {
+                SuccessfulScreen(
+                    transformData = transformData,
+                    startAction = navigateToQuestionPage,
+                    modifier = Modifier
+                )
+            }
 
-        is QuizUiState.Loading -> {
-            LoadingScreen(transformData = transformData)
-        }
+            is QuizUiState.Loading -> {
+                LoadingScreen(transformData = transformData)
+            }
 
-        is QuizUiState.Error -> {
-            ErrorScreen(
-                transformData = transformData,
-                navigateToQuestionPage = navigateToQuestionPage,
-                permissionOfflineUiState = questionUiState.question.isNotEmpty(),
-                retryAction = viewModel::trayLoadData
-            )
+            is QuizUiState.Error -> {
+                ErrorScreen(
+                    transformData = transformData,
+                    navigateToQuestionPage = navigateToQuestionPage,
+                    permissionOfflineUiState = questionUiState.question.isNotEmpty(),
+                    retryAction = viewModel::trayLoadData
+                )
+            }
         }
     }
 }
