@@ -17,7 +17,7 @@ class QuizAppViewModel(private val quizPreferencesRepository: QuizPreferencesRep
         }
             .stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
+                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
                 initialValue = QizAppUiState()
             )
 
@@ -25,6 +25,10 @@ class QuizAppViewModel(private val quizPreferencesRepository: QuizPreferencesRep
         viewModelScope.launch {
             quizPreferencesRepository.saveFontSettingsPreference(isFontSettings)
         }
+    }
+
+    companion object {
+        private const val TIMEOUT_MILLIS = 5_000L
     }
 }
 
