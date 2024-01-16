@@ -26,5 +26,4 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     override val questionRepository: QuestionRepository by lazy {
         OfflineQuizRepository(QuizDatabase.getDatabase(context).questionDao())
     }
-
 }

@@ -27,6 +27,9 @@ object AppViewModelProvider {
                 quizApplication().container.questionRepository
             )
         }
+        initializer {
+            QuizAppViewModel(quizApplication().quizPreferencesRepository)
+        }
     }
 }
 

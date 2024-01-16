@@ -1,5 +1,10 @@
 package com.leadsdoit.quizforme.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,14 +26,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.leadsdoit.quizforme.R
@@ -35,15 +42,19 @@ import com.leadsdoit.quizforme.ui.navigation.QuizNavHost
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuizApp(navController: NavHostController = rememberNavController()) {
+fun QuizApp(
+    quizAppViewModel: QuizAppViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    navController: NavHostController = rememberNavController()
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val transformData = rememberSaveable { mutableStateOf(true) }
+    val uiState by quizAppViewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             QuizTopAppBar(
-                chengData = { transformData.value = !transformData.value },
+                fontUiState = uiState.isFontSettings,
+                chengData = quizAppViewModel::selectLayout,
                 scrollBehavior = scrollBehavior
             )
         }
@@ -53,7 +64,7 @@ fun QuizApp(navController: NavHostController = rememberNavController()) {
                 .fillMaxSize()
                 .padding(it)
         ) {
-            QuizNavHost(transformData = transformData.value, navController = navController)
+            QuizNavHost(transformData = uiState.isFontSettings, navController = navController)
         }
     }
 }
@@ -61,7 +72,8 @@ fun QuizApp(navController: NavHostController = rememberNavController()) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizTopAppBar(
-    chengData: () -> Unit,
+    fontUiState: Boolean,
+    chengData: (Boolean) -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier
 ) {
@@ -71,11 +83,27 @@ fun QuizTopAppBar(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = chengData) {
-                    Icon(
-                        imageVector = Icons.Filled.Warning,
-                        contentDescription = stringResource(R.string.status_change_button)
-                    )
+                IconButton(onClick = { chengData(!fontUiState) }) {
+                    AnimatedVisibility(
+                        fontUiState,
+                        enter = scaleIn() + expandVertically(expandFrom = Alignment.CenterVertically),
+                        exit = scaleOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Warning,
+                            contentDescription = stringResource(R.string.status_change_button)
+                        )
+                    }
+                    AnimatedVisibility(
+                        !fontUiState,
+                        enter = scaleIn() + expandVertically(expandFrom = Alignment.CenterVertically),
+                        exit = scaleOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Info,
+                            contentDescription = stringResource(R.string.status_change_button)
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.width(dimensionResource(R.dimen.padding_small)))
                 Image(
