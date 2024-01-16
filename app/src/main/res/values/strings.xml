@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QuizForLeadsdoit</string>
+    <string name="app_name">QuizForMe</string>
     <string name="connection_error">connection error icon</string>
     <string name="retry">retry</string>
     <string name="failed_to_load_data_from_server">Failed to load data from server \n But if the data was downloaded earlier, you can play offline </string>

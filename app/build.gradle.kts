@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.leadsdoit.quizforleadsdoit"
+    namespace = "com.leadsdoit.quizforme"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.leadsdoit.quizforleadsdoit"
+        applicationId = "com.leadsdoit.quizforme"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
