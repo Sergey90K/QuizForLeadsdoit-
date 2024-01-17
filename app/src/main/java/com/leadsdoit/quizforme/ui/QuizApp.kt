@@ -54,7 +54,7 @@ fun QuizApp(
         topBar = {
             QuizTopAppBar(
                 fontUiState = uiState.isFontSettings,
-                chengData = quizAppViewModel::selectLayout,
+                chengData = quizAppViewModel::selectFont,
                 scrollBehavior = scrollBehavior
             )
         }

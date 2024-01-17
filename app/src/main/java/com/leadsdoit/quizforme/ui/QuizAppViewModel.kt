@@ -21,7 +21,7 @@ class QuizAppViewModel(private val quizPreferencesRepository: QuizPreferencesRep
                 initialValue = QizAppUiState()
             )
 
-    fun selectLayout(isFontSettings: Boolean) {
+    fun selectFont(isFontSettings: Boolean) {
         viewModelScope.launch {
             quizPreferencesRepository.saveFontSettingsPreference(isFontSettings)
         }
